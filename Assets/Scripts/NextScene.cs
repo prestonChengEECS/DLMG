@@ -5,10 +5,11 @@ using System.Collections;
 
 public class NextScene : MonoBehaviour 
 {
-
+    //determines the anount of delay before it boots up the next scene
     public float delay = 40f;
 
     public void LoadNextScene() {
+        //calls method defined below. 
         StartCoroutine(LoadNextAfterDelay());
     }
 
