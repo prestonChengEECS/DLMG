@@ -6,8 +6,8 @@ public class Player : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
-
     public Transform wallCheck;
+    //bascially like ground checking but for the sides of the character.
     public float wallCheckRadius = 0.2f;
     public LayerMask wallLayer;
 
