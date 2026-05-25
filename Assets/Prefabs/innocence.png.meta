@@ -1,13 +1,19 @@
 fileFormatVersion: 2
-guid: 841ad8a71eb9a1647b84fb4e4639caa2
+guid: 1ce8457381ebc04469ed34c7e6ea5fba
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2793503924931395096
-    second: Walk1 2_0
+      213: -7116328608726456786
+    second: goodnow_0
   - first:
-      213: -8278190908738154895
-    second: Walk1 2_1
+      213: 2171073180003529628
+    second: goodnow_1
+  - first:
+      213: -6027828120843043314
+    second: goodnow_2
+  - first:
+      213: 6912416422361310279
+    second: goodnow_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +109,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Walk1 2_0
+      name: goodnow_0
       rect:
         serializedVersion: 2
-        x: 127
-        y: 176
-        width: 106
-        height: 244
+        x: 378
+        y: 696
+        width: 81
+        height: 77
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 81ef134e40584c620800000000000000
-      internalID: 2793503924931395096
+      spriteID: e26e8e395d8bd3d90800000000000000
+      internalID: -7116328608726456786
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Walk1 2_1
+      name: goodnow_1
       rect:
         serializedVersion: 2
-        x: 160
-        y: 420
-        width: 78
-        height: 74
+        x: 376
+        y: 530
+        width: 75
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 17e4bcd6a35fd1d80800000000000000
-      internalID: -8278190908738154895
+      spriteID: e8ae87ea604ed4f4b97e16be26fbd6c0
+      internalID: 2171073180003529628
       vertices: []
       indices: 
       edges: []
@@ -150,7 +156,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: c18ae88a7a20a404da26bca4bf8c823c
     internalID: 0
     vertices: []
     indices: 
@@ -158,10 +164,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Walk1 2_0: 2793503924931395096
-      Walk1 2_1: -8278190908738154895
+      goodnow_0: -7116328608726456786
+      goodnow_1: 2171073180003529628
+      goodnow_2: -6027828120843043314
+      goodnow_3: 6912416422361310279
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
