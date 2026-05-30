@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class PlayerInventory : MonoBehaviour 
+public class PlayerInventory : MonoBehaviour
 {
     //an instance of the Player's Inventory. 
     public static PlayerInventory instance;
@@ -12,20 +12,31 @@ public class PlayerInventory : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null) {
+        if (instance == null)
+        {
             instance = this;
-        } else { 
+        }
+        else
+        {
             Destroy(gameObject); //if there is already an instance of a playerInventory, destroy the one that is trying to be created. 
         }
+
+        for (int i = 0; i < maxSlots; i++) {
+            items.Add(null);
+        }
+
     }
 
-    public bool AddItem(PickupItem item) {
-        if (items.Count >= maxSlots)
-        {
-            return false;
+    public bool AddItem(PickupItem item)
+    {
+        for (int i = 0; i < items.Count; i++) {
+            if (items[i] == null) { 
+                items[i] = item;
+                InventoryUI.instance.AddItemToSlot(item.icon, item.itemName, item.itemDescription);
+                return true;
+            }
         }
-        items.Add(item); //add the item to the list
-        InventoryUI.instance.AddItemToSlot(item.icon);
-        return true;
+
+        return false; //all slots full, no nulls left, returns false and doesn't add.
     }
 }

@@ -35,7 +35,6 @@ public class Player : MonoBehaviour
     {
 
         inventoryOpen = InventoryUI.instance.inventoryPanel.activeSelf;
-        Debug.Log(inventoryOpen);
 
         if (inventoryOpen)
         {

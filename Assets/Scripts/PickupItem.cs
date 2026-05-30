@@ -3,6 +3,7 @@ using UnityEngine;
 public class PickupItem : MonoBehaviour 
 {
     public string itemName;
+    public string itemDescription;
     public Sprite icon;
     public ItemType itemType;
 
@@ -10,11 +11,13 @@ public class PickupItem : MonoBehaviour
     {
         //if there is a collision between the player and the 
         if (collision.CompareTag("Player")) {
-            bool pickedUp = PlayerInventory.instance.AddItem(this);
 
-            if (pickedUp) {
-                Destroy(gameObject);            
+                bool pickedUp = PlayerInventory.instance.AddItem(this);
+
+                if (pickedUp)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
-    }
 }

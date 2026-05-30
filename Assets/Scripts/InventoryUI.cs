@@ -21,7 +21,12 @@ public class InventoryUI : MonoBehaviour
     }
     private void Start()
     {
-        inventoryPanel.SetActive(false); //initially starts off my hiding the inventory panel
+        inventoryPanel.SetActive(false); //initially starts off by hiding the inventory panel
+
+        //helps assign a specific number aka ID to each invidiual physical slot. important for dragging and dropping and swapping. 
+        for (int i = 0; i < slots.Length; i++) {
+            slots[i].slotIndex = i;
+        }
     }
     private void Update()
     {
@@ -30,11 +35,11 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public void AddItemToSlot(Sprite icon)
+    public void AddItemToSlot(Sprite icon, string name, string description)
     {
         foreach (ItemSlot slot in slots) {
             if (!slot.isFull) {
-                slot.SetItem(icon);
+                slot.SetItem(icon, name, description);
                 break;
             }
         }
