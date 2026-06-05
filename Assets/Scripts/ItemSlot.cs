@@ -5,6 +5,7 @@ using TMPro;
 
 public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
+
     public Image icon;
     public bool isFull = false;
 
@@ -15,24 +16,74 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public TextMeshProUGUI tooltipTitle;
     public TextMeshProUGUI tooltipDescription;
 
+    public GameObject collectibleExpanded; //this is what you attach to the collectible slots so that you can expand it upon hover.
+
+    public AudioSource noteAudio;
+    public AudioClip pageOpen;
+    public AudioClip pageClose; 
+
 
     public int slotIndex; //physical slot GameObject needs to know its own position number
 
     private GameObject dragIcon; //this will be the floating icon copy of the item being dragged.
 
-    public void SetItem(Sprite ItemIcon, string name, string description) {
-        if (icon != null) {
+    private bool isMouseOver;
+
+    public void SetItem(Sprite ItemIcon, string name, string description)
+    {
+
+        if (icon != null)
+        {
+            icon.sprite = ItemIcon;
+            icon.enabled = true;
+        }
+        itemName = name;
+        itemName = name;
+        itemDescription = description;
+        isFull = true;
+    }
+
+    public void SetCollections(Sprite ItemIcon, string name, string description, GameObject expandedUI)
+    {
+        if (icon != null)
+        {
             icon.sprite = ItemIcon;
             icon.enabled = true;
         }
         itemName = name;
         itemDescription = description;
-        isFull = true; //marks the slot as taken.
+        collectibleExpanded = expandedUI; 
+        isFull = true; // marks the slot as occupied so it renders.
     }
 
-    public void ClearSlot() {
 
-        if (icon != null) {
+    private void Update()
+    {
+
+
+        if (collectibleExpanded != null && collectibleExpanded.activeSelf && Input.GetKeyDown(KeyCode.Space))
+        {
+            noteAudio.PlayOneShot(pageClose);
+            collectibleExpanded.SetActive(false);
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && isMouseOver)
+        {
+            //only try to toggle if this item has an expandable UI assigned in the inspector.
+            Debug.Log("Space was pressed!");
+            if (collectibleExpanded != null)
+            {
+                noteAudio.PlayOneShot(pageOpen);
+                collectibleExpanded.SetActive(true);
+            }
+        }
+    }
+    public void ClearSlot()
+    {
+
+        if (icon != null)
+        {
             icon.sprite = null; //the sprite 
             icon.enabled = false; //hides the icon
         }
@@ -40,34 +91,41 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         //clears out the description so when you hover over the now empty slot, it doesn't retain the description.
         itemDescription = "";
         itemName = "";
+        collectibleExpanded = null;
         isFull = false; //marks the slot as free
     }
 
 
     //when you hover over a filled slot, the corresponding description appears
-    public void OnPointerEnter(PointerEventData eventData) {
+    public void OnPointerEnter(PointerEventData eventData)
+    {
         Debug.Log("Hovering over slot! isFull = " + isFull);
-        if (isFull) {
+        isMouseOver = true;
+        if (isFull && (InventoryUI.instance.inventoryPanel.activeSelf || InventoryUI.instance.collectiblesPanel.activeSelf))
+        {
             Debug.Log("Showing tooltip!");
             //"text bubble" sets active and is now visible to the player
             tooltip.SetActive(true);
             //the name of the object is presented.
-            tooltipTitle.text = itemName; 
+            tooltipTitle.text = itemName;
             //the description of the object is presented.
             tooltipDescription.text = itemDescription;
         }
     }
 
     //when you are no longer hovering over the slot, the description disappears
-    public void OnPointerExit(PointerEventData eventData) {
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isMouseOver = false;
         //gets hidden and can no longer be seen by the player. 
-        tooltip.SetActive(false); 
+        tooltip.SetActive(false);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         //if it is empty don't do anything at all
-        if (!isFull) {
+        if (!isFull)
+        {
             return;
         }
 
@@ -88,56 +146,134 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     //while holding the mouse down, the icon follows with where the mouse is.
     public void OnDrag(PointerEventData eventData)
     {
-        if (dragIcon != null) {
+        //when you switch the inventory state off, the drag icon destroys itself.
+        if (!InventoryUI.instance.inventoryPanel.activeSelf && !InventoryUI.instance.collectiblesPanel.activeSelf)
+        {
+            if (dragIcon != null)
+            {
+                Destroy(dragIcon);
+            }
+            return;
+        }
+
+        if (dragIcon != null)
+        {
             dragIcon.transform.position = eventData.position; //eventData.position is the position of the mouse.
         }
     }
 
 
     //we want to dragonIcon to be deleted when the pointer is released
-    public void OnEndDrag(PointerEventData eventData) {
+    public void OnEndDrag(PointerEventData eventData)
+    {
         Destroy(dragIcon);
     }
 
     //when we drop it on top of another slot, we want it to swap places. this is what handles it
-    public void OnDrop(PointerEventData eventData) { 
+    //when we drop it on top of another slot, we want it to swap places. this is what handles it
+    public void OnDrop(PointerEventData eventData)
+    {
         //pointerDrag specifically gives you the GameObject that is currently being dragged. This is the slot you picked up and are dragging.
         //GetComponent gets the ItemSlot script attached to that dragged GameObject, so you can access its icon, itemName, itemDescription.
         ItemSlot draggedFrom = eventData.pointerDrag.GetComponent<ItemSlot>();
 
+        if (draggedFrom == null)
+        {
+            return;
+        }
+
+        /*checks to see if the draggedFrom is actually from the array slots. If draggedFrom is not found in the slots array, it returns -1.
+          * checks the same process for the destination slot as well.
+          * in combination, it checks to see if the origin and the ending point are both INVENTORY slots.
+          */
+        bool inventoryDrop = System.Array.IndexOf(InventoryUI.instance.slots, draggedFrom) != -1 && System.Array.IndexOf(InventoryUI.instance.slots, this) != -1;
+
+
+        /* similarly, it checks to see if draggedFrom is actually a collectible slot. 
+          * checks to see if the destination is a collectible slot as well. 
+          * * */
+        bool collectibleDrop = System.Array.IndexOf(InventoryUI.instance.collectibleSlots, draggedFrom) != -1 && System.Array.IndexOf(InventoryUI.instance.collectibleSlots, this) != -1;
+
+        //makes it so that you can't try and drag something from inventory to collectible and vice versa.
+        if (!inventoryDrop && !collectibleDrop)
+        {
+            return;
+        }
+
         /*
-         * Stores the destination slot's data. 
-         * Takes into account it's sprite, name, and description, as well as if it was filled in the first place.
-         * isFull = true will be helpful to evaluate because we need to know if we have to swap.
-         * isFull = false means we just have to move from one slot to another. We don't need to transfer data such as tempSprite, tempName, etc to the origin slot.
-         */
+          * Stores the destination slot's data. 
+          * Takes into account it's sprite, name, and description, as well as if it was filled in the first place.
+          * isFull = true will be helpful to evaluate because we need to know if we have to swap.
+          * isFull = false means we just have to move from one slot to another. We don't need to transfer data such as tempSprite, tempName, etc to the origin slot.
+          */
         Sprite tempSprite = icon.sprite;
         string tempName = itemName;
         string tempDescription = itemDescription;
+        GameObject tempExpanded = collectibleExpanded;
         bool tempFull = isFull;
 
-        //put all of this data into a new destination slot
-        SetItem(draggedFrom.icon.sprite, draggedFrom.itemName, draggedFrom.itemDescription);
-
-        if (tempFull)
+        // ROUTED DATA MANAGEMENT:
+        // Use your existing drop rules to send data to SetItem or SetCollections
+        if (inventoryDrop)
         {
-            //if you are dragging into an already populated slot, swap them.
-            draggedFrom.SetItem(tempSprite, tempName, tempDescription);
+            //put all of this data into a new destination slot
+            SetItem(draggedFrom.icon.sprite, draggedFrom.itemName, draggedFrom.itemDescription);
+
+            if (tempFull)
+            {
+                //if you are dragging into an already populated slot, swap them.
+                draggedFrom.SetItem(tempSprite, tempName, tempDescription);
+            }
+            else
+            {
+                //if you are dragging into an empty slot you just need to clear the slot.
+                draggedFrom.ClearSlot();
+            }
         }
-        else { 
-            //if you are dragging into an empty slot you just need to clear the slot.
-            draggedFrom.ClearSlot();
+        else if (collectibleDrop)
+        {
+            //put all of this data into a new destination collectible slot (including the expanded layout UI)
+            SetCollections(draggedFrom.icon.sprite, draggedFrom.itemName, draggedFrom.itemDescription, draggedFrom.collectibleExpanded);
+
+            if (tempFull)
+            {
+                //if you are dragging into an already populated slot, swap them.
+                draggedFrom.SetCollections(tempSprite, tempName, tempDescription, tempExpanded);
+            }
+            else
+            {
+                //if you are dragging into an empty slot you just need to clear the slot.
+                draggedFrom.ClearSlot();
+            }
         }
 
-        //help reevaluate the PlayerInventory list to adjust to the visual UI change.
 
+        //help reevaluate the PlayerInventory list to adjust to the visual UI change. Updates the backend to sync with the   
+        //this is so that the array updates and then the items in the array that work the backend update accordingly with visuals.
         //this is a temporary variable where it denotes the index of the list corresponding to the draggedFrom index.
-        PickupItem temp = PlayerInventory.instance.items[draggedFrom.slotIndex];
-        //the starting slot's information is now the ending slot's information.
-        PlayerInventory.instance.items[draggedFrom.slotIndex] = PlayerInventory.instance.items[slotIndex];
-        //the ending slot's information is now the starting slot's information.
-        PlayerInventory.instance.items[slotIndex] = temp;
+        if (inventoryDrop)
+        {
+            PickupItem temp = PlayerInventory.instance.items[draggedFrom.slotIndex];
+            //the starting slot's information is now the ending slot's information.
+            PlayerInventory.instance.items[draggedFrom.slotIndex] = PlayerInventory.instance.items[slotIndex];
+            //the ending slot's information is now the starting slot's information.
+            PlayerInventory.instance.items[slotIndex] = temp;
+        }
+        else if (collectibleDrop)
+        {
+            PickupItem temp = PlayerInventory.instance.collections[draggedFrom.slotIndex];
+            PlayerInventory.instance.collections[draggedFrom.slotIndex] = PlayerInventory.instance.collections[slotIndex];
+            PlayerInventory.instance.collections[slotIndex] = temp;
+        }
+    }
 
-        
+    //onDisable triggers instantly the exact moment a GameObject is turned off.
+    private void OnDisable()
+    {
+        // If this slot was being dragged when the menu closed, vaporize the ghost icon!
+        if (dragIcon != null)
+        {
+            Destroy(dragIcon);
+        }
     }
 }

@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public float jumpForce = 10f;
 
     public bool inventoryOpen = false; //starts off as false because the inventory starts off as hidden.
+    public bool collectablesOpen = false;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -35,17 +36,16 @@ public class Player : MonoBehaviour
     {
 
         inventoryOpen = InventoryUI.instance.inventoryPanel.activeSelf;
+        collectablesOpen = InventoryUI.instance.collectiblesPanel.activeSelf;
 
-        if (inventoryOpen)
+        if (!inventoryOpen && !collectablesOpen)
         {
-            moveSpeed = 0;
-            animator.Play("Idle");
+            horizontalInput = Input.GetAxis("Horizontal");
         }
         else {
-            moveSpeed = 3f;
+            horizontalInput = 0; //if any of these are open, kill the input immediately and stop moving.
         }
 
-        horizontalInput = Input.GetAxis("Horizontal");
         animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
 
 
@@ -65,21 +65,21 @@ public class Player : MonoBehaviour
         //if the inventory is open, then halt all processes...
 
         //jumping mechanic. checks to see if on ground first.
-        if (Input.GetKeyDown(KeyCode.W) && isGrounded && !inventoryOpen)
+        if (Input.GetKeyDown(KeyCode.W) && isGrounded && !inventoryOpen && !collectablesOpen)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             isGrounded = false;
         }
 
         //flips the character direction.
-        if (horizontalInput > 0 && !inventoryOpen)
+        if (horizontalInput > 0 && !inventoryOpen && !collectablesOpen)
         {
             //if d is pressed face right
             transform.eulerAngles = new Vector3(0, 0, 0);
             animator.Play("Run");
 
         }
-        else if (horizontalInput < 0 && !inventoryOpen)
+        else if (horizontalInput < 0 && !inventoryOpen && !collectablesOpen)
         {
             //if a is pressed face left
             transform.eulerAngles = new Vector3(0, 180, 0);
