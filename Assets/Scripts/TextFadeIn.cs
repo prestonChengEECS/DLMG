@@ -10,6 +10,7 @@ public class TextFadeIn : MonoBehaviour
     public float slowFadeDuration = 0.3f;
     public float periodPause = 0.8f;
     public float commaPause = 0.3f;
+    public float exclamationPause = 1f;
     public float questionPause = 0.8f;
     public float colonPause = 0.8f;
     public float waitTime = 0f;
@@ -78,6 +79,7 @@ public class TextFadeIn : MonoBehaviour
                 if (text[i] == ',') yield return new WaitForSeconds(commaPause);
                 if (text[i] == '?') yield return new WaitForSeconds(questionPause);
                 if (text[i] == ':') yield return new WaitForSeconds(colonPause);
+                if (text[i] == '!') yield return new WaitForSeconds(exclamationPause);
             }
         }
 
