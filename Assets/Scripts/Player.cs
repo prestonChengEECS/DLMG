@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
     public bool inventoryOpen = false; //starts off as false because the inventory starts off as hidden.
     public bool collectablesOpen = false;
 
+    public float springForce = 5.0f;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -104,4 +106,19 @@ public class Player : MonoBehaviour
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
     }
+
+    //handles bouncing on the SPRING pad.
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Spring Pad")) {
+
+            //gets the Spring script that is attached to the spring pad base so you can check to see if it is still bouncing or not.
+            Spring springComponent = collision.gameObject.GetComponent<Spring>();
+
+            if (springComponent != null && !springComponent.isBouncing) {
+                rb.AddForce(Vector2.up * springForce, ForceMode2D.Impulse);
+            }
+        }
+    }
+
 }

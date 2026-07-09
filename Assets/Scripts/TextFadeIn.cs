@@ -19,10 +19,10 @@ public class TextFadeIn : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip keyPressSound;
     public AudioClip spacePressSound;
+    public Color textColor;
 
     void Start()
     {
-        textComponent.color = new Color(1, 1, 1, 0);
         StartCoroutine(FadeInText(textComponent));
     }
 
@@ -33,6 +33,8 @@ public class TextFadeIn : MonoBehaviour
         string text = textComponent.text;
 
         yield return new WaitForSeconds(waitTime);
+
+        Color32 baseColor32 = textColor;
 
         for (int i = 0; i < totalChars; i++)
         {
@@ -63,10 +65,10 @@ public class TextFadeIn : MonoBehaviour
                 float alpha = Mathf.Lerp(0, 255, elapsed / fadeDuration);
 
                 Color32[] colors = textComponent.textInfo.meshInfo[meshIndex].colors32;
-                colors[vertexIndex] = new Color32(255, 255, 255, (byte)alpha);
-                colors[vertexIndex + 1] = new Color32(255, 255, 255, (byte)alpha);
-                colors[vertexIndex + 2] = new Color32(255, 255, 255, (byte)alpha);
-                colors[vertexIndex + 3] = new Color32(255, 255, 255, (byte)alpha);
+                colors[vertexIndex] = new Color32(baseColor32.r, baseColor32.g, baseColor32.b, (byte)alpha);
+                colors[vertexIndex + 1] = new Color32(baseColor32.r, baseColor32.g, baseColor32.b, (byte)alpha);
+                colors[vertexIndex + 2] = new Color32(baseColor32.r, baseColor32.g, baseColor32.b, (byte)alpha);
+                colors[vertexIndex + 3] = new Color32(baseColor32.r, baseColor32.g, baseColor32.b, (byte)alpha);
 
                 textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
                 yield return null;
@@ -91,7 +93,7 @@ public class TextFadeIn : MonoBehaviour
         {
             outElapsed += Time.deltaTime;
             float alpha = Mathf.Lerp(1, 0, outElapsed / fadeOutDuration);
-            textComponent.color = new Color(1, 1, 1, alpha);
+            textComponent.color = new Color(textColor.r, textColor.g, textColor.b, alpha);
             yield return null;
         }
     }
