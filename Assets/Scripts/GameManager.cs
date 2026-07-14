@@ -63,14 +63,35 @@ public class GameManager : MonoBehaviour
     {
         if (gameCompleted && !hasEndTriggerFaded) {
             hasEndTriggerFaded = true;
+            StartCoroutine(changeTitleScreen());
         }
     }
 
     //we want to change DONT in the title to JUST instead. this helps do that.
     //also changes the lighter from a closed position to an open position.
     private IEnumerator changeTitleScreen() {
-        GameObject dont = GameObject.FindWithTag("Dont");
+        GameObject dont = GameObject.FindWithTag("Dont"); 
+        GameObject just = GameObject.FindWithTag("Just");
+
         yield return new WaitForSeconds(2.0f);
+
+        if (dont != null) { 
+            TextMeshProUGUI dontText = dont.GetComponent<TextMeshProUGUI>();
+
+            if (dontText != null) {
+                dontText.CrossFadeAlpha(0f, dontFadeOutTime, false);
+            }
+        }
+
+        yield return new WaitForSeconds(2.0f);
+
+        if (just != null) { 
+            TextMeshProUGUI justText = just.GetComponent<TextMeshProUGUI>();
+
+            if (justText != null) {
+                justText.CrossFadeAlpha(1f, justFadeInTime, false);
+            }
+        }
     }
 
 }
