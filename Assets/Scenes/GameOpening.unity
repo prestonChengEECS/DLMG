@@ -5833,7 +5833,7 @@ MonoBehaviour:
   checkpointScene: 
   gameCompleted: 0
   waitTime: 3
-  justFadeInTime: 3
+  justFadeInTime: 50
   dontFadeOutTime: 3
   lighterSpadeOpen: {fileID: 7819000997608221774, guid: c867d2a293f48f644a8cd22f0e3b087f, type: 3}
 --- !u!1 &2113136432
