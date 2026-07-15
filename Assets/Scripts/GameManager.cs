@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     public float dontFadeOutTime = 3.0f;
 
     public Sprite lighterSpadeOpen;
+    public AudioSource lighterAudioSource;
+    public AudioClip lighterAudio;
     void Awake()
     {
         if (instance == null)
