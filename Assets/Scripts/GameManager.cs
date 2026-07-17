@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public Sprite lighterSpadeOpen;
     public AudioSource lighterAudioSource;
     public AudioClip lighterAudio;
+    public AudioClip flameAudio;
     void Awake()
     {
         if (instance == null)
@@ -34,15 +35,33 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject); //so there is only ONE GameManager. Defensive programming
         }
+
+        GameObject flame = GameObject.FindWithTag("Flame");
+        if (flame != null) {
+            Image flameImage = flame.GetComponent<Image>();
+
+            if (flameImage != null)
+            {
+                flameImage.enabled = false;
+            }
+            else {
+                Debug.Log("OH NAUR");
+            }
+        
+        }
     }
 
     private void Start()
     {
         GameObject just = GameObject.FindWithTag("Just");
-        TextMeshProUGUI justText = just.GetComponent<TextMeshProUGUI>();
 
-        if (justText != null) {
-            justText.canvasRenderer.SetAlpha(0f);
+        if (just != null) {
+            TextMeshProUGUI justText = just.GetComponent<TextMeshProUGUI>();
+
+            if (justText != null)
+            {
+                justText.canvasRenderer.SetAlpha(0f);
+            }
         }
     }
 
@@ -107,6 +126,10 @@ public class GameManager : MonoBehaviour
         }
 
         StartCoroutine(FlickerRoutine(lighterIcon));
+
+        yield return new WaitForSeconds(6.0f);
+
+        StartCoroutine(FlameRoutine());
     }
 
 
@@ -154,11 +177,12 @@ public class GameManager : MonoBehaviour
         float duration2 = 0.08f;
         float t2 = 0f;
 
+
+        lighterAudioSource.PlayOneShot(lighterAudio);
         while (elapsedTime < duration2) {
 
             elapsedTime += Time.deltaTime;
             t2 = elapsedTime / duration2;
-
             reference.transform.localScale = Vector3.Lerp(squish, expand ,t2);
             reference.transform.localRotation = Quaternion.Slerp(tiltRight, tiltLeft, t2);
 
@@ -184,9 +208,99 @@ public class GameManager : MonoBehaviour
         //just to ensure that it is set back to its original position
         reference.transform.localScale = originalScale;
         reference.transform.localRotation = originalRotation;
+    }
 
+
+    private IEnumerator FlameRoutine() {
+        GameObject flame = GameObject.FindWithTag("Flame");
+        if (flame == null) { //if there is no such object with a Flame tag. 
+            yield break;
+        }
+
+        Vector3 originalScale = flame.transform.localScale; //the original size of the flame. 
+        Image flameImage = flame.GetComponent<Image>();
+        Vector3 originalPosition = flame.transform.localPosition;
+
+        if (flameImage != null) {
+            flameImage.enabled = true;
+        }
+
+        flame.transform.localScale = Vector3.zero;
+
+        //-------------------------------------------------------------------------------------------------------------------------
+        //PHASE 1: THE BURST STRETCH --> animate the flame exploding from nothing into an exaggerated and tall skinny.
+        //-------------------------------------------------------------------------------------------------------------------------
+        float elapsedTime = 0f;
+        float duration = 0.1f;
+        Vector3 stretch = new Vector3(originalScale.x * 0.6f, originalScale.y * 1.5f, originalScale.z);
+        float t = 0f; //this will be updated constantly in the while loop as elapsedTime/duration.
+
+        //-------------------------------------------------------------------------------------------------------------------------
+        //PHASE 2: interlopate to the destination. then interlopate from its stretched position back down to its original scale.
+        //-------------------------------------------------------------------------------------------------------------------------
+
+        lighterAudioSource.PlayOneShot(flameAudio);
+
+        yield return new WaitForSeconds(0.5f);
+
+        while (elapsedTime < duration) {
+            elapsedTime += Time.deltaTime;
+            t = elapsedTime / duration; //keeps updating every single run of the while loop for a seamless "animation" the line below as a result keeps updating as well.
+            flame.transform.localScale = Vector3.Lerp(Vector3.zero, stretch, t); //start from zero and then grow to its stretched length.
+
+            yield return null; //updates the Lerp state every frame. 
+        }
+
+        elapsedTime = 0f;
+        duration = 0.08f;
+        t = 0f;
+
+        while (elapsedTime < duration) {
+            elapsedTime += Time.deltaTime;
+            t = elapsedTime / duration;
+            flame.transform.localScale = Vector3.Lerp(stretch, originalScale, t);
+
+            yield return null;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------
+        //PHASE 3: have it vary in size for the rest of the time to simulate a flame instead of it just being static. 
+        //-------------------------------------------------------------------------------------------------------------------------
+
+        //Time.time * 30f speeds up the waveform clock in order to achieve a rapid fire jitter effect.
+        //the higher the number you multiply Time.time by, the faster the fire jitters.
+        //Multiplying the final wave result by 0.05f limits the wiggle to a tiny 5 percent scale offset.
+        //the 0.05 is the amplitude. the higher the number you multiply by, the more noticable the jiggle is. 
+        while (true) {
+            float xOffset = Mathf.Cos(Time.time * 2f) * 0.02f; //just like math, Mathf.Cos is for the xOffset (cos refers to x)
+            float yOffset = Mathf.Sin(Time.time * 2f) * 0.02f; //just like math. Mathf.Sin is for the yOffset (sin refers to y)
+
+            flame.transform.localScale = new Vector3(originalScale.x + xOffset, originalScale.y + yOffset, originalScale.z);
+
+            //stacking two waves together produces an organic wiggle kind of movement
+            //this is possible all the while keeping the RectTransform position perfectly locked on the wick. 
+
+            float baseSway = Mathf.Sin(Time.time * 3f) * 8f; //a broad but gentle body tilt
+            float tipWiggle = Mathf.Sin(Time.time * 7f) * 2f; //a fast but sharp jitter
+
+            //adding a faster sharper wave with a slower more broad wave creates a wiggle effect. 
+            float finalZRotation = baseSway + tipWiggle;
+
+
+            //apply the rotation effect
+            flame.transform.localRotation = Quaternion.Euler(0f, 0f, finalZRotation);
+
+            yield return null;
+
+            //-------------------------------------------------------------------------------------------------------------------------
+            //you use Mathf.sin when you want your movment to start perfectly at zero (the center) and smoothly build up. 
+            //an example is a flame that starts pointing straight up, or a camera shake that smoothly starts from a standstill.
+
+            //you use Math.cos when you want your movement to start at its absolute max value (the peak).
+            //an example of this is a swining pendulum that you drop from its highest point, or an object you want to start fully scaled up. 
+            //-------------------------------------------------------------------------------------------------------------------------
+        }
 
 
     }
-
 }

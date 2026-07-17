@@ -9,6 +9,7 @@ TagManager:
   - Just
   - Lighter Button
   - Lighter Icon
+  - Flame
   layers:
   - Default
   - TransparentFX
