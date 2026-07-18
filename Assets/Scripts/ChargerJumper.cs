@@ -6,17 +6,18 @@ public class ChargerJumper : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        foreach(Transform children in transform) {
-           ChargerLever springComponent =  children.GetComponent<ChargerLever>();
-
-            if (springComponent != null && springComponent.activated) {
-                charge++;
-            }
-        }
     }
     // Update is called once per frame
     void Update()
     {
-        
+        foreach (Transform children in transform)
+        {
+            ChargerLever springComponent = children.GetComponent<ChargerLever>();
+
+            if (springComponent != null && springComponent.activated)
+            {
+                charge++;
+            }
+        }
     }
 }
