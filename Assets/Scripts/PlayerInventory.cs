@@ -5,7 +5,7 @@ public class PlayerInventory : MonoBehaviour
 {
     //an instance of the Player's Inventory. 
     public static PlayerInventory instance;
-    //we need a list to store all of the items. we choose to store the class PickupItem in order to be able to store anythingwithin that class, such as ItemType, ItemName, or icon.
+    //we need a list to store all of the items. we choose to store the class PickupItem in orde r to be able to store anythingwithin that class, such as ItemType, ItemName, or icon.
     public List<PickupItem> items = new List<PickupItem>();
     public List<PickupItem> collections = new List<PickupItem>();
     //the amount of items max that we can store. every time we pick up we decrement.
