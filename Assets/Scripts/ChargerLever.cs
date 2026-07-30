@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class ChargerLever : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class ChargerLever : MonoBehaviour
     private void Update()
     {
         if (playerAccessible && Input.GetKeyDown(KeyCode.F)) {
-            pullLever();
+            StartCoroutine(pullLever());
         }
     }
 
@@ -25,13 +26,26 @@ public class ChargerLever : MonoBehaviour
         }
     }
 
+    //when the player is not in range of the lever don't they no longer have the option to pull it
     private void OnTriggerExit2D(Collider2D collision) {
         if (collision.CompareTag("Player")) {
             playerAccessible = false;
         }
     }
 
-    public void pullLever() { 
-        
+    IEnumerator pullLever() {
+        Transform lever = transform.GetChild(0);
+        Quaternion leverInitialRoation = lever.transform.rotation;
+
+        Quaternion leverTargetRotation = Quaternion.Euler(0f, 0f, 45f);
+        float duration = 2.0f;
+        float elapsedTime = 0f;
+        float t;
+        while (elapsedTime < duration) {
+            elapsedTime += Time.deltaTime;
+            t = elapsedTime / duration;
+            lever.transform.rotation = Quaternion.Slerp(leverInitialRoation, leverTargetRotation, t);
+            yield return null;
+        }
     }
 }

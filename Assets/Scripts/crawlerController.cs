@@ -4,7 +4,6 @@ public class CrawlerController : MonoBehaviour
 {
     public Rigidbody2D rb;
     public float pullForce = 0.2f;
-    private bool shouldPull = false;
 
     public void StopAndReach() {
         rb.linearVelocity = new Vector2(0,rb.linearVelocityY);
