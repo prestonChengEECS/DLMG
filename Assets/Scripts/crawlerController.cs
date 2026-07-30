@@ -2,44 +2,16 @@ using UnityEngine;
 
 public class CrawlerController : MonoBehaviour
 {
-    [Header("Target")]
-    public Transform player;
+    public Rigidbody2D rb;
+    public float pullForce = 0.2f;
+    private bool shouldPull = false;
 
-    [Header("Arm Bones")]
-    public Transform leftShoulderBone;
-    public Transform rightShoulderBone;
-
-    [Header("Crawl Settings")]
-    public float crawlMoveSpeed = 1.2f;
-    public float armReachSpeed = 6f;
-    public float armSwingDegrees = 30f;
-
-    void Update()
-    {
-        // 1. Slide whole object along the ground towards player
-        if (player != null)
-        {
-            transform.position = Vector2.MoveTowards(
-                transform.position,
-                player.position,
-                crawlMoveSpeed * Time.deltaTime
-            );
-        }
-
-        // 2. Animate arm reaches
-        AnimateArms();
+    public void StopAndReach() {
+        rb.linearVelocity = new Vector2(0,rb.linearVelocityY);
     }
 
-    void AnimateArms()
-    {
-        // Smooth back-and-forth wave
-        float swing = Mathf.Sin(Time.time * armReachSpeed) * armSwingDegrees;
-
-        // Front arm reaches forward, back arm pulls back
-        if (leftShoulderBone != null)
-            leftShoulderBone.localRotation = Quaternion.Euler(0, 0, swing);
-
-        if (rightShoulderBone != null)
-            rightShoulderBone.localRotation = Quaternion.Euler(0, 0, -swing);
+    public void PullForward() {
+        rb.linearVelocity = new Vector2(-pullForce, rb.linearVelocityY);
     }
+
 }
