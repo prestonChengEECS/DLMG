@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: 1648049187528322294
     second: lever_lever_0
-  - first:
-      213: -8350202732166719981
-    second: lever_lever_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -108,10 +105,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 243
-        height: 483
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 318
+        height: 604
+      alignment: 9
+      pivot: {x: 0.07723846, y: 0.013408411}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -124,33 +121,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: lever_lever_1
-      rect:
-        serializedVersion: 2
-        x: 149
-        y: 452
-        width: 170
-        height: 163
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 316d4ba3bde1e1c80800000000000000
-      internalID: -8350202732166719981
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: c835ab4f8525d354a85b9aa4c4b895e6
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +136,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       lever_lever_0: 1648049187528322294
-      lever_lever_1: -8350202732166719981
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
