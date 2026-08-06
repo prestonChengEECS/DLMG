@@ -22,12 +22,17 @@ public class ChargerJumper : MonoBehaviour
 
                 if (chargerLever != null)
                 {
-                    if (chargerLever.activated == true)
+                    if (chargerLever.activated)
                     {
                         charge++;
                     }
                 }
             }
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
     }
 }

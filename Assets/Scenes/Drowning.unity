@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TextFadeIn
   textComponent: {fileID: 267883721}
   defaultFadeDuration: 0.05
-  waitTime: 100
+  waitTime: 105
   backspaceSpeed: 0.05
   hesitationPause: 0.3
   periodPause: 0.8
@@ -505,7 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TextFadeIn
   textComponent: {fileID: 496514043}
   defaultFadeDuration: 0.05
-  waitTime: 55
+  waitTime: 70
   backspaceSpeed: 0.05
   hesitationPause: 0.3
   periodPause: 0.8
@@ -840,7 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TextFadeIn
   textComponent: {fileID: 774851523}
   defaultFadeDuration: 0.05
-  waitTime: 65
+  waitTime: 75
   backspaceSpeed: 0.05
   hesitationPause: 0.3
   periodPause: 0.8
@@ -1350,7 +1350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TextFadeIn
   textComponent: {fileID: 1686576951}
   defaultFadeDuration: 0.05
-  waitTime: 95
+  waitTime: 100
   backspaceSpeed: 0.05
   hesitationPause: 0.3
   periodPause: 0.8
@@ -1517,7 +1517,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TextFadeIn
   textComponent: {fileID: 1725964098}
   defaultFadeDuration: 0.05
-  waitTime: 15
+  waitTime: 20
   backspaceSpeed: 0.05
   hesitationPause: 0.3
   periodPause: 0.8
