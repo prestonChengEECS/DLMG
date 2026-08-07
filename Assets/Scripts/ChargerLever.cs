@@ -19,6 +19,7 @@ public class ChargerLever : MonoBehaviour
             isTurning = true; //prevents you from just spamming F
             StartCoroutine(pullLever());
             activated = !activated;
+            StartCoroutine(ActivationFade());
             chargerJumperScript.initializeCharge();
         }
     }
@@ -48,6 +49,7 @@ public class ChargerLever : MonoBehaviour
         Transform lever = transform.GetChild(0); //gets the actual lever shaft of the lever.
         Quaternion currentState = lever.transform.rotation; //gets the current state of the lever. checks to see if it is on the onState or the offState
 
+
         float elapsedTime = 0f;
         float duration = 2f;
         float t = elapsedTime / duration;
@@ -73,5 +75,58 @@ public class ChargerLever : MonoBehaviour
         }
 
         isTurning = false;
+    }
+
+    private IEnumerator ActivationFade() { 
+        SpriteRenderer onStateIndication = transform.GetChild(3).GetComponent<SpriteRenderer>();
+        float fadeDuration = 2f;
+        float timeElapsed = 0f;
+        float t = 0f;
+
+        //cache the original color and its starting alpha
+        Color startColor = onStateIndication.color;
+        float startAlpha = onStateIndication.color.a;
+
+        //this is the ending state that we are trying to reach.
+        float targetAlpha = 1f;
+        
+
+        if (activated) {
+            //switch from fully transparent to fully visible
+            while (timeElapsed < fadeDuration) {
+                timeElapsed += Time.deltaTime;
+                t = timeElapsed / fadeDuration;
+
+                //Lerp the alpha value.
+                float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+
+                //apply it to the asset
+                Color newColor = startColor; //make a copy of the color.
+                newColor.a = currentAlpha;
+                onStateIndication.color = newColor;
+                yield return null;
+                
+            }
+        }
+
+        if (!activated) {
+            startColor = onStateIndication.color;
+            startAlpha = onStateIndication.color.a;
+
+            timeElapsed = 0f;
+            t = 0f;
+
+            while (timeElapsed < fadeDuration) {
+                timeElapsed += Time.deltaTime;
+                t = timeElapsed / fadeDuration;
+
+                float currentAlpha = Mathf.Lerp(startAlpha, 0f, t);
+
+                Color newColor = startColor;
+                newColor.a = currentAlpha;
+                onStateIndication.color = newColor;
+                yield return null;
+            }
+        }
     }
 }
