@@ -7,6 +7,9 @@ public class ChargerLever : MonoBehaviour
     private bool playerAccessible = false;
     ChargerJumper chargerJumperScript;
     private bool isTurning = false;
+
+    public AudioSource audioSource;
+    public AudioClip generatorStart;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -51,7 +54,7 @@ public class ChargerLever : MonoBehaviour
 
 
         float elapsedTime = 0f;
-        float duration = 2f;
+        float duration = 6f;
         float t = elapsedTime / duration;
 
         if (!activated) {
@@ -79,7 +82,7 @@ public class ChargerLever : MonoBehaviour
 
     private IEnumerator ActivationFade() { 
         SpriteRenderer onStateIndication = transform.GetChild(3).GetComponent<SpriteRenderer>();
-        float fadeDuration = 2f;
+        float fadeDuration = 6f;
         float timeElapsed = 0f;
         float t = 0f;
 
@@ -106,6 +109,19 @@ public class ChargerLever : MonoBehaviour
                 onStateIndication.color = newColor;
                 yield return null;
                 
+            }
+
+            while (activated) {
+                //the "heartbeat" of the pulsing effect. sin makes it harmonic so it fades in and fades out and so on
+                //mathf.sin itself returns a value between -1 and 1. a phase shift of 1 makes it so that it outputs values between 0 and 2. finally, dividing that by 2 gets you an output between 0 and 1. 
+                //we need values between 0 and 1 in order to use Lerp correctly.
+                float pulse = (Mathf.Sin(Time.time * 4f) + 1f) / 2f;
+                float currentAlpha = Mathf.Lerp(0.3f, 1.0f, pulse);
+
+                Color newColor = startColor;
+                newColor.a = currentAlpha;
+                onStateIndication.color = newColor;
+                yield return null;
             }
         }
 
