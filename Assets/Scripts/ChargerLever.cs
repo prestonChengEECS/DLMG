@@ -10,6 +10,8 @@ public class ChargerLever : MonoBehaviour
 
     public AudioSource audioSource;
     public AudioClip generatorStart;
+    public AudioClip generatorRunning;
+    public AudioClip generatorEnd;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,6 +25,7 @@ public class ChargerLever : MonoBehaviour
             StartCoroutine(pullLever());
             activated = !activated;
             StartCoroutine(ActivationFade());
+            HandleJumperAudio();
             chargerJumperScript.initializeCharge();
         }
     }
@@ -54,11 +57,12 @@ public class ChargerLever : MonoBehaviour
 
 
         float elapsedTime = 0f;
-        float duration = 6f;
+        float duration = 4f;
         float t = elapsedTime / duration;
 
         if (!activated) {
             elapsedTime = 0;
+            audioSource.Play();
             while (elapsedTime < duration) {
                 elapsedTime += Time.deltaTime;
                 t = elapsedTime / duration;
@@ -82,7 +86,7 @@ public class ChargerLever : MonoBehaviour
 
     private IEnumerator ActivationFade() { 
         SpriteRenderer onStateIndication = transform.GetChild(3).GetComponent<SpriteRenderer>();
-        float fadeDuration = 6f;
+        float fadeDuration = 4f;
         float timeElapsed = 0f;
         float t = 0f;
 
@@ -143,6 +147,16 @@ public class ChargerLever : MonoBehaviour
                 onStateIndication.color = newColor;
                 yield return null;
             }
+        }
+    }
+
+    //this method is called AFTER the activation state switches. take note. 
+    private void HandleJumperAudio() {
+        //if activated, then audioSource.Play() the generatorStart sound.
+        if (activated) {
+            audioSource.clip = generatorStart;
+            audioSource.loop = false;
+            audioSource.Play();
         }
     }
 }
