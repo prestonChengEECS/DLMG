@@ -21,11 +21,10 @@ public class ChargerLever : MonoBehaviour
     private void Update()
     {
         if (playerAccessible && Input.GetKeyDown(KeyCode.F) && !isTurning) {
-            isTurning = true; //prevents you from just spamming F
-            StartCoroutine(pullLever());
+            isTurning = true; //prevents you from just spamming F;
             activated = !activated;
-            StartCoroutine(ActivationFade());
-            HandleJumperAudio();
+            StartCoroutine(pullLever());
+            ActivationFade();
             chargerJumperScript.initializeCharge();
         }
     }
@@ -60,17 +59,15 @@ public class ChargerLever : MonoBehaviour
         float duration = 4f;
         float t = elapsedTime / duration;
 
-        if (!activated) {
+        if (activated) {
             elapsedTime = 0;
-            audioSource.Play();
             while (elapsedTime < duration) {
                 elapsedTime += Time.deltaTime;
                 t = elapsedTime / duration;
                 lever.transform.rotation = Quaternion.Slerp(offState, onState, t);
                 yield return null;
             }
-            activated = true;
-        } else if (activated) {
+        } else {
             elapsedTime = 0;
             while (elapsedTime < duration) {
                 elapsedTime += Time.deltaTime;
@@ -78,85 +75,84 @@ public class ChargerLever : MonoBehaviour
                 lever.transform.rotation = Quaternion.Slerp(onState, offState,t);
                 yield return null;
             }
-            activated = false;
         }
-
         isTurning = false;
     }
 
-    private IEnumerator ActivationFade() { 
-        SpriteRenderer onStateIndication = transform.GetChild(3).GetComponent<SpriteRenderer>();
-        float fadeDuration = 4f;
-        float timeElapsed = 0f;
-        float t = 0f;
-
-        //cache the original color and its starting alpha
-        Color startColor = onStateIndication.color;
-        float startAlpha = onStateIndication.color.a;
-
-        //this is the ending state that we are trying to reach.
-        float targetAlpha = 1f;
-        
-
-        if (activated) {
-            //switch from fully transparent to fully visible
-            while (timeElapsed < fadeDuration) {
-                timeElapsed += Time.deltaTime;
-                t = timeElapsed / fadeDuration;
-
-                //Lerp the alpha value.
-                float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, t);
-
-                //apply it to the asset
-                Color newColor = startColor; //make a copy of the color.
-                newColor.a = currentAlpha;
-                onStateIndication.color = newColor;
-                yield return null;
-                
-            }
-
-            while (activated) {
-                //the "heartbeat" of the pulsing effect. sin makes it harmonic so it fades in and fades out and so on
-                //mathf.sin itself returns a value between -1 and 1. a phase shift of 1 makes it so that it outputs values between 0 and 2. finally, dividing that by 2 gets you an output between 0 and 1. 
-                //we need values between 0 and 1 in order to use Lerp correctly.
-                float pulse = (Mathf.Sin(Time.time * 4f) + 1f) / 2f;
-                float currentAlpha = Mathf.Lerp(0.3f, 1.0f, pulse);
-
-                Color newColor = startColor;
-                newColor.a = currentAlpha;
-                onStateIndication.color = newColor;
-                yield return null;
-            }
+    private void ActivationFade()
+    {
+        if (activated)
+        {
+            StartCoroutine(StartUp());
         }
-
-        if (!activated) {
-            startColor = onStateIndication.color;
-            startAlpha = onStateIndication.color.a;
-
-            timeElapsed = 0f;
-            t = 0f;
-
-            while (timeElapsed < fadeDuration) {
-                timeElapsed += Time.deltaTime;
-                t = timeElapsed / fadeDuration;
-
-                float currentAlpha = Mathf.Lerp(startAlpha, 0f, t);
-
-                Color newColor = startColor;
-                newColor.a = currentAlpha;
-                onStateIndication.color = newColor;
-                yield return null;
-            }
+        else
+        {
+            StartCoroutine(WindDown());
         }
     }
 
-    //this method is called AFTER the activation state switches. take note. 
-    private void HandleJumperAudio() {
-        //if activated, then audioSource.Play() the generatorStart sound.
-        if (activated) {
-            audioSource.clip = generatorStart;
-            audioSource.loop = false;
-            audioSource.Play();
+    private IEnumerator StartUp() {
+        float customTime = 0f; //the clock driving the sine wave. It advances based on currentSpeed
+        float currentSpeed = 2f; //determines how fast it blinks indirectly. Used to calculate customTime.
+        float minAlpha = 0f; //we will keep on increasing minAlpha so that it will keep growing brighter and brighter.
+
+        Transform onIndicator = transform.Find("indicatoron");
+
+        if (onIndicator == null) {
+            yield break;
         }
+
+        SpriteRenderer onIndicatorRenderer = onIndicator.GetComponent<SpriteRenderer>();
+
+        Color color = onIndicatorRenderer.color;
+
+
+        audioSource.clip = generatorStart;
+        audioSource.loop = false;
+        audioSource.Play();
+
+        while (activated) {
+            //update currentSpeed so that it accelerates your speed value over time up to a cap. Mathf.Min handles that cap so it will not go past 25f.
+            currentSpeed = Mathf.Min(currentSpeed + (2f * Time.deltaTime), 15f);
+
+            //now we have to update customTime so that it can blink faster and faster each time.
+            //quadratic growth because currentspeed keeps getting larger as time passes so you are adding bigger and bigger numbers to customTime each time. 
+            customTime += Time.deltaTime * currentSpeed;
+
+            //now we actually have to calculate the wavePattern or speed so we can pass it into Lerp
+            //as customTime grows, the Mathf.Sin value changes more quickly, resulting in faster blinking patterns.
+            //we update minAlpha so that the range in which the transparency can oscillate gets smaller and smaller.
+            minAlpha = Mathf.Min(minAlpha + (0.15f * Time.deltaTime), 0.5f);
+            float wavePattern = (Mathf.Sin(customTime) + 1f) / 2f;
+
+            //now we fit it into Lerp!
+            float currentAlpha = Mathf.Lerp(minAlpha, 1f, wavePattern);
+
+            //now that we have the blinking sequence implemented, we can now assign it to the onIndicator!
+            //first we create a new color (a result color) that we can map back to the onIndicatorRenderer.
+            Color newColor = color;
+            newColor.a = currentAlpha;
+
+            onIndicatorRenderer.color = newColor;
+
+
+            yield return null;
+        }
+    }
+
+    private IEnumerator WindDown() {
+        //we need customTime so that we can create our own blinking frequency.
+        float customTime = 0f;
+        //we also need currentSpeed and currentSpeed will continue to increase.
+        float currentSpeed = 2f;
+
+        //now we need to reference the spriteRenderer in order to change the alpha value. 
+        Transform onIndicator = transform.Find("indicatoron");
+
+        if (onIndicator == null) {
+            yield break;
+        }
+
+        SpriteRenderer onIndicatiorRenderer = onIndicator.GetComponent<SpriteRenderer>();
     }
 }

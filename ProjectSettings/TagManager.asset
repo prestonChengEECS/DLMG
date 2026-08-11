@@ -11,6 +11,7 @@ TagManager:
   - Lighter Icon
   - Flame
   - Lever
+  - Indicator
   layers:
   - Default
   - TransparentFX
