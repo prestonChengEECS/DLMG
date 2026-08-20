@@ -31,8 +31,7 @@ public class ChargerJumper : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        
+    public int getCharge() {
+        return charge;
     }
 }
