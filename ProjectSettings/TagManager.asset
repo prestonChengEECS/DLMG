@@ -12,6 +12,7 @@ TagManager:
   - Flame
   - Lever
   - Indicator
+  - Ladder
   layers:
   - Default
   - TransparentFX

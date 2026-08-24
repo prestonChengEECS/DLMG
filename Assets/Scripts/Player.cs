@@ -25,7 +25,6 @@ public class Player : MonoBehaviour
 
     public float springForce = 5.0f;
 
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -111,13 +110,20 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Spring Pad")) {
-
+            Debug.Log("boing");
             //gets the Spring script that is attached to the spring pad base so you can check to see if it is still bouncing or not.
             Spring springComponent = collision.gameObject.GetComponent<Spring>();
 
             if (springComponent != null && !springComponent.isBouncing) {
                 rb.AddForce(Vector2.up * springForce, ForceMode2D.Impulse);
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ladder")) {
+            Debug.Log("i am currently touching a ladder");
         }
     }
 
