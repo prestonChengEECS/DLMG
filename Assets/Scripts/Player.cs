@@ -19,7 +19,6 @@ public class Player : MonoBehaviour
     public bool collectablesOpen = false;
     public float springForce = 5.0f;
 
-    private bool ladderGrabable = false;
     // --- STATE MANAGEMENT EDITS START HERE ---
     public enum Playerstate { Idle, Walking, Climbing }
     public Playerstate currentState = Playerstate.Idle;
@@ -98,14 +97,6 @@ public class Player : MonoBehaviour
                 currentState = Playerstate.Idle;
             }
         }
-
-        //-----------------------------------------------------------------------
-        //this is where all of the climbing happens 
-        //-----------------------------------------------------------------------
-        if (ladderGrabable && Input.GetKeyDown(KeyCode.E) ) {
-            Debug.Log("climbing up the ladder now!");
-            currentState = Playerstate.Climbing;
-        }
     }
 
     void FixedUpdate()
@@ -113,12 +104,6 @@ public class Player : MonoBehaviour
         if (currentState == Playerstate.Idle || currentState == Playerstate.Walking)
         {
             rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
-        }
-
-        if (currentState == Playerstate.Climbing && ladderGrabable)
-        {
-            rb.linearVelocity = new Vector2(0f, verticalInput * 3f);
-            rb.gravityScale = 0f;
         }
     }
 
@@ -142,25 +127,6 @@ public class Player : MonoBehaviour
             {
                 rb.AddForce(Vector2.up * springForce, ForceMode2D.Impulse);
             }
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Ladder"))
-        {
-            Debug.Log("i am currently touching a ladder");
-            ladderGrabable = true;
-            Debug.Log("the boolean ladderGrabable is now " + ladderGrabable);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Ladder")) {
-            Debug.Log("i am no longer touching the ladder");
-            ladderGrabable = false;
-            Debug.Log("the boolean ladderGrabable is now " + ladderGrabable);
         }
     }
 }
