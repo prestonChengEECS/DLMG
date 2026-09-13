@@ -1,4 +1,4 @@
 If games are a medium of expression, then this is my story. If not, maybe they should be.
 
 Source Code:
-https://https://github.com/prestonChengEECS/DLMG/tree/main/Assets/Scripts
+https://github.com/prestonChengEECS/DLMG/tree/main/Assets/Scripts
